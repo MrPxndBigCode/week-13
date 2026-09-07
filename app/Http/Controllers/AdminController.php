@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\models\blog;
 
 class AdminController extends Controller
 {
@@ -14,7 +15,7 @@ class AdminController extends Controller
     
     function blogs()
     {
-        $blogs= DB::table('blogs')->paginate(5);
+        $blogs= blog::paginate(5);
         return view('blogs',compact('blogs'));
     }
     
@@ -45,16 +46,16 @@ class AdminController extends Controller
             'title'=> $request->title,
             'content'=> $request->content
         ];
-        DB::table("blogs")->insert($data);
+        blog::insert($data);
         return redirect('/blogs');
     }
 
     function delete($id){
-        DB::table('blogs')->where('id', $id)->delete();
-        return redirect()->route("blogs");
+        blog::find($id)->delete(); 
+        return redirect()->back();
     }
     function change($id){
-        $blog = DB::table('blogs')->where('id', $id)->first();
+        $blog = blog::find($id);
         $data=[
             'status' => $blog->status
         ];
@@ -64,12 +65,12 @@ class AdminController extends Controller
             $data['status']=1;
         }
         
-        DB::table("blogs")->where('id', $id)->update($data);
-        return redirect('/blogs');
+        blog::find($id)->update($data);
+        return redirect()->back();
     }
     function edit($id)
     {
-        $blog = DB::table('blogs')->where('id', $id)->first();
+        $blog =blog::find($id);
         return view('edit', compact('blog'));
     }
     function update(Request $request,$id){
@@ -85,7 +86,7 @@ class AdminController extends Controller
 
         $data=['title'=> $request->title,'content'=> $request->content];
         
-        DB::table("blogs")->where('id', $id)->update($data);
+        blog::find($id)->update($data);
         return redirect('/blogs');
     }
 
